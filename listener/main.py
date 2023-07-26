@@ -1,24 +1,23 @@
-from azure.iot.device import IoTHubDeviceClient, Message , IoTHubModuleClient
-CONNECTION_STRING = "HostName=smartcity.azure-devices.net;DeviceId=test001;SharedAccessKey=75N18Hxe+QAmx6UFXIMvhtJdPKRU4s2LHG2RI3gHuXI="
-DEVICE_ID = "test001"
+import logging
+from azure.eventhub import EventHubConsumerClient, EventData ,CheckpointStore
 
-def message_listener(message):
-    print("接收到訊息: {}".format(message.data))
+connection_str = 'Endpoint=sb://iothub-ns-smartcity-25123052-7222bd878a.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=H6JBFYEk5X61mpFqZdSSZOUTF8Mz6OiVLYcrVDKgTlc=;EntityPath=smartcity'
+consumer_group = 'simon'
+eventhub_name = 'smartcity'
+client = EventHubConsumerClient.from_connection_string(connection_str, consumer_group, eventhub_name=eventhub_name)
 
-# 建立 IoT 設備客戶端
+logger = logging.getLogger("azure.eventhub")
+# logging.basicConfig(level=logging.INFO)
 
-# client = IoTHubModuleClient.create_from_edge_environment()
-client = IoTHubDeviceClient.create_from_connection_string(CONNECTION_STRING)
-# 設定訊息接收處理程序
-client.on_message_received = message_listener
+def on_event(partition_context, event: EventData ):
+    print("Received event: {}".format(event.body_as_str()))
+    partition_context.update_checkpoint(event)
 
-# 連線到 Azure IoT 中心
-client.connect()
-print("connected")
 
-# 持續執行，直到程式被中斷
-while True:
-    pass
 
-# 斷開連線
-client.disconnect()
+with client:
+    print("ready")
+    client.receive(
+        on_event=on_event,
+        
+    )
