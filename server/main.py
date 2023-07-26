@@ -42,6 +42,7 @@ result = 0
 
 @app.get("/add")
 def add():
+
     global result
     result = result +1 
     client.patch_twin_reported_properties( {
