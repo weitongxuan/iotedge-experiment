@@ -6,8 +6,8 @@ print("starting")
 client = IoTHubModuleClient.create_from_edge_environment()
 
 
-client = IoTHubDeviceClient.create_from_connection_string("")
-client.get_storage_info_for_blob()
+# client = IoTHubDeviceClient.create_from_connection_string("")
+# client.get_storage_info_for_blob()
 
 def method_request_handler(method_request):
     
